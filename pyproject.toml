@@ -1,25 +1,23 @@
-[project] # Update all fields in this section
-name = "mscape_template"  # Change this to your package - it must match module name in src
-dynamic = ["version"]  # Change the version in __init__.py in the package directory.
-description = "Short description here"
-authors = [{name = "Author name", email = "email.address@example.com"}]
+[project]
+name = "profiler"
+dynamic = ["version"]
+description = "Profiler assigns a clinical profile to a sample given the classification outputs (ClasPar)."
+authors = [{name = "Jess Friedersdorff", email = "jess.friedersdorff@ukhsa.gov.uk"}]
 requires-python = ">=3.12"
-dependencies = ["pandas", "pyyaml", "climb-onyx-client"]
+dependencies = ["pandas", "pyyaml", "openpyxl",
+"taxaplease@git+https://github.com/ukhsa-collaboration/gpha-mscape-taxaplease"]
 
 [tool.setuptools.dynamic]
-version = {attr = "mscape_template.__version__"} # Add package name here to get version
+version = {attr = "profiler.__version__"} # Add underscore separated repo name here
 
 [project.optional-dependencies] # Dependencies for developers only - add more if required
 dev = ["ruff", "pytest", "pre-commit"]
 
-[build-system] # Leave this section
+[build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
-[project.scripts] # Update with main repo script here
-qc_sample = "mscape_template.mscape_script:main"
-
-[tool.ruff.lint] # Lint rules to follow - add or delete if required
+[tool.ruff.lint]
 select = [
     # pycodestyle
     "E",
@@ -39,7 +37,7 @@ select = [
     "PTH",
 ]
 
-ignore = ["E501"] # Lint rules to ignore - add or remove as required
+ignore = ["E501", "UP031"]
 
 [tool.ruff]
 line-length = 120
