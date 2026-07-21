@@ -8,12 +8,17 @@ Clone repo and create environment:
 `git clone git@github.com:ukhsa-collaboration/gpha-mscape-orangebox-profiler.git`
 
 Installation for users:
+
 `cd gpha-mscape-orangebox-profiler`
+
 `pip install .`
 
 Installation for developers (installs code in editable mode):
+
 `cd cd gpha-mscape-orangebox-profiler`
+
 `pip install --editable '.[dev]'`
+
 `pre-commit install`  - this must be run before commiting any changes.
 
 
