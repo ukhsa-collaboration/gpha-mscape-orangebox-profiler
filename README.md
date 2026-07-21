@@ -20,10 +20,13 @@ Installation for developers (installs code in editable mode):
 ## Usage
 
 This is a library only, and is intended to be used within other codebases. First, read in
-the xlsx file. The tab names become the profile names. This is stored in a lookup using 
-the function `make_profiles_dict`. 
+the profile look up file (in xlsx format - the tab names become the profile names). This is 
+stored in a lookup using the function `make_profiles_dict`. Once that is read in, it is 
+possible to look up either a single taxon ID using `check_profile_all_the_way_up` or add
+the profile, rank and name to a dataframe that contains at least a taxon ID column using 
+`add_profile_to_results`.
 
-For example,
+For example:
 
 ```
 from profiler import get_profiles as profiler
