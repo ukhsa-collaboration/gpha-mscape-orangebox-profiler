@@ -66,7 +66,9 @@ def get_profiles_and_metadata_from_json(path_to_json: Path) -> tuple[dict, dict]
         metadata: dict[str, str] = d["metadata"]
     except KeyError as e:
         raise InputError(
-            1, "Provided json file must contain 'metadata' and 'profiles' at the top level.", "KeyError"
+            1,
+            f"Provided json file must contain 'metadata' and 'profiles' at the top level. Found {list(d.keys())}.",
+            "KeyError",
         ) from e
 
     # make taxon ID integer
