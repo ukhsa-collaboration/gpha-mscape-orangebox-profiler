@@ -3,6 +3,7 @@ get_profiles module includes functionality to parse Profile Tables (as an excel 
 apply the profiles to taxa, either using a single taxon ID or to a dataframe that contains the column 'taxon_id'
 """
 
+import json
 import logging
 from collections import deque
 from pathlib import Path
@@ -45,6 +46,38 @@ class InputError(ProfilerError):
 # Functions #
 
 
+def get_profiles_and_metadata_from_json(path_to_json: Path) -> tuple[dict, dict]:
+    """
+    Parses json into profiles dict and metadata dict.
+    Profiles dict has format 'profile' : {taxon_id: {'taxon': 'human readable name', 'rank': 'taxonomy rank'}
+    Metadata dict contains information about the lookup, like database version and lookup version.
+
+    :param path_to_json: Path to json to parse.
+    :type path_to_json: Path
+    :return: profiles lookup, metadata.
+    :rtype: tuple[dict]
+    :raises InputError: If json does not contain 'metadata' and 'profiles'
+    """
+    with path_to_json.open() as profile_json:
+        d: dict = json.load(profile_json)
+
+    try:
+        p: dict = d["profiles"]
+        metadata: dict[str, str] = d["metadata"]
+    except KeyError as e:
+        raise InputError(
+            1, "Provided json file must contain 'metadata' and 'profiles' at the top level.", "KeyError"
+        ) from e
+
+    # make taxon ID integer
+    profiles: dict[str, dict[int, dict[str, str]]] = {}
+    for profile, taxa in p.items():
+        profiles[profile] = {}
+        for taxon, info in taxa.items():
+            profiles[profile][int(taxon)] = {"taxon": info["taxon"], "rank": info["rank"]}
+    return profiles, metadata
+
+
 def _parse_profile_table_to_dict(profile_df: pd.DataFrame) -> dict:
     """
     Make the profile spreadsheet in dataframe format into a dict with just the taxon_id as the keys, and human readable
@@ -72,7 +105,7 @@ def _parse_profile_table_to_dict(profile_df: pd.DataFrame) -> dict:
     return taxon_id_dict
 
 
-def make_profiles_dict(path_to_table: str | Path) -> dict[str, dict[int, str]]:
+def make_profiles_dict_from_excel(path_to_table: str | Path) -> dict[str, dict[int, str]]:
     """
     Make single dictionary of the profiles:
     'profile' : {taxon_id: human readable ncbi taxonomy name.}
