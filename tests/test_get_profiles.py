@@ -3,7 +3,9 @@ Create unit tests for modules in the tests/ folder. All functions in a repo shou
 tests should be run before and after any changes are made.
 """
 
+import json
 import logging
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -16,6 +18,8 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.max_rows", None)
 
 PATH_TO_TEST_TABLE = "tests/test_profile_tables/test_profile_tables.xlsx"
+
+PATH_TO_JSON = Path("tests/test_profile_tables/profile_202303.0.0.json")
 
 TEST_PROFILE_NAMES = ["ProfileX", "ProfileC", "ProfileB"]
 
@@ -44,6 +48,29 @@ PROFILES_DICT = {
     },
 }
 
+METADATA_DICT = {
+    "Taxonomy_database": "ncbi_March-2023",
+    "Excel_filename": "profiler_unittest_profile_tables.xlsx",
+    "Creation_date": "2026-01-01",
+    "Version": "202303.0.0",
+}
+
+
+def test_get_profiles_and_metadata_from_json():
+    profiles, metadata = profiler.get_profiles_and_metadata_from_json(PATH_TO_JSON)
+    assert profiles == PROFILES_DICT
+    assert metadata == METADATA_DICT
+
+
+def test_get_profiles_and_metadata_from_json_broken_json(tmp_path):
+    broken_json_path = Path(tmp_path / "broken_input.json")
+    with broken_json_path.open(mode="w") as j:
+        json.dump(PROFILES_DICT, j)
+
+    with pytest.raises(profiler.InputError) as e:
+        profiles, metadata = profiler.get_profiles_and_metadata_from_json(broken_json_path)
+        print(e)
+
 
 def test_parse_profile_table():
     table = pd.read_excel(PATH_TO_TEST_TABLE)  # this just gets one tab
@@ -66,7 +93,7 @@ def test_parse_profile_table_bad_columns(caplog):
 
 
 def test_make_profile_dicts():
-    profiles_dict = profiler.make_profiles_dict(PATH_TO_TEST_TABLE)
+    profiles_dict = profiler.make_profiles_dict_from_excel(PATH_TO_TEST_TABLE)
     assert (a := len(profiles_dict)) == (e := len(TEST_PROFILE_NAMES)), (
         f"Expected dictionary with {e} keys, got {a} many keys"
     )
@@ -76,7 +103,7 @@ def test_make_profile_dicts():
 def test_make_profile_dict_no_file(caplog):
     expected_err_msg = "Expected the Profile Tables file at doesnt_exist.file but file not found. Exiting."
     with caplog.at_level(logging.ERROR) and pytest.raises(profiler.InputError) as i:
-        profiler.make_profiles_dict("doesnt_exist.file")
+        profiler.make_profiles_dict_from_excel("doesnt_exist.file")
     assert expected_err_msg in caplog.text, f"Expected file not found error, got {caplog.text}"
     assert expected_err_msg in i.value.message
     print(f"\nIf file not found, error message is:\n{i.value.message}")
