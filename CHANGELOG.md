@@ -1,3 +1,19 @@
+# Changelog
+v2.0.0 - Profiler; use json format instead of xlsx
+
+## Added
+- function to parse from json
+- unit tests for this
+- readme to explain how to parse from json
+
+## Changed
+- name of function for parsing from excel is more specific - `make_profiles_dict_from_excel`
+
+---
+---
+v1.0.1 - Profiler
+- pinned taxaplease version
+
 v1.0.0 - Profiler - library
 Library with functionality to parse profile tables (xlsx) and check up taxa ids or a dataframe.
 - basic functions to parse profile tables (all tabs)
