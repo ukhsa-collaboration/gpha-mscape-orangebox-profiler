@@ -25,11 +25,19 @@ Installation for developers (installs code in editable mode):
 ## Usage
 
 This is a library only, and is intended to be used within other codebases. First, read in
-the profile look up file (in xlsx format - the tab names become the profile names). This is 
-stored in a lookup using the function `make_profiles_dict`. Once that is read in, it is 
-possible to look up either a single taxon ID using `check_profile_all_the_way_up` or add
-the profile, rank and name to a dataframe that contains at least a taxon ID column using 
-`add_profile_to_results`.
+the profile look up file:
+
+
+    ## json:
+    Use function `get_profiles_and_metadata_from_json` and provide path to json. this must have
+    'metadata' and 'profiles' at the top level, else an InputError will be raised.
+
+    ## xlsx:
+    Use function `make_profiles_dict_from_excel` and provide path to xlsx.
+
+
+Once the lookup is read in, it is possible to look up either a single taxon ID using `check_profile_all_the_way_up` or
+add the profile, rank and name to a dataframe that contains at least a taxon ID column using `add_profile_to_results`.
 
 For example:
 
@@ -41,7 +49,11 @@ from taxaplease import TaxaPlease
 tp = TaxaPlease()
 
 # Set up profile lookup dict:
-profiles_dict = profiler.make_profiles_dict("path/to/profile/spreadsheet.xlsx")
+# Either from json (which should provide metadata)
+profiles_dict, metadata = get_profiles_and_metadata_from_json(Path("path/to/file.json"))
+
+# or from xlsx:
+profiles_dict = profiler.make_profiles_dict_from_excel("path/to/profile/spreadsheet.xlsx")
 
 # To look up just one taxid:
 profile, name, taxon_id, rank = profiler.check_profile_all_the_way_up(taxon_id, profiles_dict, tp)
