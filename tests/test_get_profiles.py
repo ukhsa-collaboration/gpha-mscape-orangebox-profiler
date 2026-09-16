@@ -65,11 +65,11 @@ def test_get_profiles_and_metadata_from_json():
 def test_get_profiles_and_metadata_from_json_broken_json(tmp_path):
     broken_json_path = Path(tmp_path / "broken_input.json")
     with broken_json_path.open(mode="w") as j:
-        json.dump(PROFILES_DICT, j)
+        json.dump({"profiles": PROFILES_DICT}, j)
 
     with pytest.raises(profiler.InputError) as e:
         profiles, metadata = profiler.get_profiles_and_metadata_from_json(broken_json_path)
-        print(e)
+    print(e)
 
 
 def test_parse_profile_table():
